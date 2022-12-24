@@ -9,9 +9,10 @@ const chatId = process.env.CHAT_ID;
 const ip = process.env.IP_ADDRESS;
 const bot = new TelegramBot(token);
 
-global.isAlive = false;
+global.isAlive = true;
+global.prevIsAlive = true;
 
-const getMessage = (isAlive) => isAlive ? 'Світло з\'явилося' : 'Світло зникло';
+const getMessage = (isAlive) => isAlive ? '💡 Світло з\'явилося' : '🕯️ Світло зникло';
 
 
 const pingServer = async () =>  {
@@ -31,10 +32,14 @@ const sendTelegramNotification = async (message) => {
 const setAliveState = async () => {
   try {
     const { alive } = await pingServer()
-    if (alive !== global.isAlive) {
-      global.isAlive = alive;
-      const message = getMessage(isAlive);
-      await sendTelegramNotification(message);
+    if (alive !== global.prevIsAlive && global.isAlive !== alive) {
+      return global.prevIsAlive = alive;
+    } else {
+      if (alive !== global.isAlive) {
+        global.isAlive = alive;
+        const message = getMessage(isAlive);
+        await sendTelegramNotification(message);
+      }
     }
   } catch (error) {
     console.log('Catched error ', error);
@@ -63,10 +68,9 @@ app.get('/', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`server started on port ${PORT}`);
   setInterval(() => {
-    console.log(1, global.isAlive);
-
+    console.log(1, 'isAlive', global.isAlive);
+    console.log(1, 'prevIsAlive', global.prevIsAlive);
     setAliveState();
-    console.log(2, global.isAlive);
   }, 15000);
 
 });
