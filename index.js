@@ -40,6 +40,17 @@ const setAliveState = async () => {
     console.log('Catched error ', error);
   }
 }
+app.get('/health', async (req, res) => {
+  res.status(200);
+})
+
+app.get('/', async (req, res) => {
+  try {
+    res.send('ЖК Садочок Світлобот');
+  } catch (error) {
+    res.status(400).send('Error');
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`server started on port ${PORT}`);
