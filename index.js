@@ -41,13 +41,21 @@ const setAliveState = async () => {
   }
 }
 app.get('/health', async (req, res) => {
-  res.status(200);
+  try {
+    await sendTelegramNotification('Hello from server');
+    
+    res.send('ЖК Садочок Світлобот health page');
+  } catch (error) {
+    console.log(error);
+    res.status(400).send('Error');
+  }
 })
 
 app.get('/', async (req, res) => {
   try {
     res.send('ЖК Садочок Світлобот');
   } catch (error) {
+    console.log(error);
     res.status(400).send('Error');
   }
 });
